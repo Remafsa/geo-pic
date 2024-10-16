@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 # Your Google API Key
-API_KEY = # google maps API key
+API_KEY = "google maps API key"
 
 def get_place_details(place_names):
     base_url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json"
