@@ -2,7 +2,6 @@ import json
 import requests
 import pandas as pd
 import os
-
 def json_to_dataframe(file_path):
     """
     Read a JSON file and convert it to a Pandas DataFrame.
@@ -30,19 +29,21 @@ def json_to_dataframe(file_path):
 #  path up^^^^^^
 #df = json_to_dataframe(file_path)
 
-def download_images_from_df(df, url_column='photo_url', latitude_column='latitude', longitude_column='longitude', save_folder='Images', save_csv=False, csv_file_name='output.csv'):
+
+
+def download_images_from_df(df, url_column='photo_url', lat_column='LAT', lon_column='LON', save_folder='geoclip/Images', save_csv=False, csv_file_name='output.csv'):
     """
     Download images from a DataFrame and save them locally in a specified folder.
 
     Parameters:
     - df: DataFrame containing image URLs, latitudes, and longitudes.
     - url_column: str, name of the column containing the image URLs (default is 'photo_url').
-    - latitude_column: str, name of the column containing the latitudes (default is 'latitude').
-    - longitude_column: str, name of the column containing the longitudes (default is 'longitude').
+    - lat_column: str, name of the column containing the latitudes (default is 'LAT').
+    - lon_column: str, name of the column containing the longitudes (default is 'LON').
     - save_folder: str, folder where the images will be saved (default is 'Images').
 
     Returns:
-    - df: The updated DataFrame with the 'image_path' column.
+    - df: The updated DataFrame with the 'IMG_FILE' column.
     """
     # Create a folder to save images if it doesn't already exist
     os.makedirs(save_folder, exist_ok=True)
@@ -55,8 +56,8 @@ def download_images_from_df(df, url_column='photo_url', latitude_column='latitud
     for index, row in df.iterrows():
         # Extract the image URL, latitude, and longitude from the current row
         image_url = row[url_column]
-        latitude = row[latitude_column]
-        longitude = row[longitude_column]
+        latitude = row[lat_column]   # Updated reference
+        longitude = row[lon_column]   # Updated reference
 
         # Create a unique key for the latitude and longitude
         location_key = f"{latitude}_{longitude}"
@@ -81,8 +82,8 @@ def download_images_from_df(df, url_column='photo_url', latitude_column='latitud
                     file.write(response.content)
                 print(f"Downloaded: {image_name}")
 
-                # Update the 'image_path' column in the DataFrame with the saved image path
-                df.at[index, 'image_path'] = image_name
+                # Update the 'IMG_FILE' column in the DataFrame with the saved image path
+                df.at[index, 'IMG_FILE'] = image_name
             elif response.status_code == 400:
                 # Handle bad request errors
                 print(f"Skipping image from {image_url} (status code: {response.status_code})")
@@ -99,7 +100,6 @@ def download_images_from_df(df, url_column='photo_url', latitude_column='latitud
         print(f"DataFrame saved to {csv_file_name}")
 
     return df
-
 # Example DataFrame setup (replace this with the actual DataFrame)
 # Call the function to download images from the DataFrame
 #df_p = download_images_from_df(df, save_csv=True, csv_file_name='geo_pic.csv')
@@ -107,7 +107,7 @@ def download_images_from_df(df, url_column='photo_url', latitude_column='latitud
 #print(df_p)
 
 
-def save_semi_clean_data(df, lat_column='latitude', lon_column='longitude', image_path_column='image_path', output_file='semi_clean_data.csv'):
+def save_semi_clean_data(df, lat_column='latitude', lon_column='longitude', IMG_FILE_column='IMG_FILE', output_file='semi_clean_data.csv'):
     """
     Save a DataFrame with only latitude, longitude, and image path to a CSV file in the current directory.
 
@@ -115,11 +115,11 @@ def save_semi_clean_data(df, lat_column='latitude', lon_column='longitude', imag
     - df: DataFrame containing the original data.
     - lat_column: str, name of the column containing latitudes (default is 'latitude').
     - lon_column: str, name of the column containing longitudes (default is 'longitude').
-    - image_path_column: str, name of the column containing image paths (default is 'image_path').
+    - IMG_FILE_column: str, name of the column containing image paths (default is 'IMG_FILE').
     - output_file: str, name of the output CSV file (default is 'semi_clean_data.csv').
     """
     # select only the columns interested in
-    semi_clean_df = df[[lat_column, lon_column, image_path_column]]
+    semi_clean_df = df[[lat_column, lon_column, IMG_FILE_column]]
 
     # Get the current working directory  to save the file
     current_directory = os.getcwd()
@@ -138,13 +138,4 @@ def save_semi_clean_data(df, lat_column='latitude', lon_column='longitude', imag
 # Load the DataFrame from the CSV file
 #df = pd.read_csv(file_path)
 # Call the function to save the semi-clean data  just created
-#save_semi_clean_data(df)
- 
-
-
-
-
-
-
-
-
+#save_semi_clean_data(df_p)
