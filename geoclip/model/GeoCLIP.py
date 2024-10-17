@@ -114,5 +114,4 @@ class GeoCLIP(nn.Module):
         top_pred = torch.topk(probs_per_image, top_k, dim=1)
         top_pred_gps = self.gps_gallery[top_pred.indices[0]]
         top_pred_prob = top_pred.values[0]
-
         return top_pred_gps, top_pred_prob
