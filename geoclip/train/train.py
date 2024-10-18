@@ -12,7 +12,9 @@ def train(train_dataloader, model, optimizer, epoch, batch_size, device, schedul
 
     for i ,(imgs, gps) in bar:
         imgs = imgs.to(device)
-        gps = gps.to(device)
+        # gps = gps.to(device)
+        gps = tuple(torch.tensor(value).to(device) for value in gps)
+        # gps  = torch.cat(torch.tensor(gps)).to(device)
         gps_queue = model.get_gps_queue()
         optimizer.zero_grad()
 

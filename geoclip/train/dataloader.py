@@ -67,6 +67,7 @@ class GeoDataLoader(Dataset):
                 longitude = float(row['LON'])
                 coordinates.append((latitude, longitude))
 
+
         return images, coordinates
 
     def __len__(self):
@@ -81,3 +82,10 @@ class GeoDataLoader(Dataset):
         if self.transform:
             image = self.transform(image)
         return image, gps
+
+if __name__ == "__main__":
+    csv_file_path = '/Users/remaalnssiry/code/Remafsa/geo-pic/geo-pic/data/one_file.csv'
+    images_folder_path = '/Users/remaalnssiry/code/Remafsa/geo-pic/geo-pic/geoclip'
+    train_loader = GeoDataLoader(csv_file_path, images_folder_path)
+    print(train_loader.images)
+    print(train_loader.coordinates)
