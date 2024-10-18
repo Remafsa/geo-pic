@@ -21,3 +21,4 @@ rad.json
 #Test results file
 TestResults.xml
 geo-pic/geoclip/Images/
+*.pyc
