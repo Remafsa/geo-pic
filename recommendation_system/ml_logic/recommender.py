@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from tensorflow.keras.preprocessing import image as image_utils
 from tensorflow.keras.applications.resnet50 import preprocess_input
+from recommendation_system.ml_logic.feature_extractor import extract_features
+
 def recommend_similar_images(input_image_path, image_features, image_urls, model, top_n=5):
     img = image_utils.load_img(input_image_path, target_size=(224, 224))
     img_data = image_utils.img_to_array(img)
@@ -16,3 +18,77 @@ def recommend_similar_images(input_image_path, image_features, image_urls, model
 
     recommended_images = [image_urls[idx] for idx in indices.flatten()]
     return recommended_images
+import pandas as pd
+
+def find_cosine_similarity(source_features, test_features):
+    dot_product = np.dot(source_features, test_features)
+    source_norm = np.linalg.norm(source_features)
+    test_norm = np.linalg.norm(test_features)
+    if source_norm == 0 or test_norm == 0:
+        return 0.0  # Handle case where one of the vectors is zero
+    return dot_product / (source_norm * test_norm)
+
+def find_similar_images(target_image_path, image_features, downloaded_df, model, n_similar=10):
+    """
+    Find similar images based on cosine similarity of their features.
+
+    Parameters:
+    - target_image_path: str, path to the target image.
+    - image_features: np.ndarray, feature vectors for the dataset images.
+    - downloaded_df: pd.DataFrame, DataFrame containing image metadata including URLs and local paths.
+    - model: pre-trained model used for extracting features.
+    - n_similar: int, number of similar images to return.
+
+    Returns:
+    - List of tuples containing (similarity score, local image path).
+    """
+    # Extract features of the target image
+    target_features = extract_features([target_image_path], model, csv_save_path="", make_csv=False)  # Pass as a list for consistency
+    if target_features.size == 0:
+        return []
+
+    # Calculate cosine similarity between the target and all dataset images
+    similarities = []
+    for idx, features in enumerate(image_features):
+        cosine_similarity = find_cosine_similarity(target_features[0], features)  # Use the first feature vector
+        local_image_path = downloaded_df.iloc[idx]['IMG_FILE']
+        similarities.append((cosine_similarity, local_image_path))  # Include local image path
+
+    # Sort images by similarity in descending order (higher similarity first)
+    similarities.sort(reverse=True, key=lambda x: x[0])
+
+    # Return the top n_similar images
+    return similarities[:n_similar]
+def print_similar_images(similar_images, downloaded_df):
+    """
+    Print details of the similar images.
+
+    Parameters:
+    - similar_images: list of tuples, where each tuple contains (similarity score, image path).
+    - downloaded_df: pd.DataFrame, DataFrame containing image metadata including URLs and local paths.
+    """
+    for sim_score, sim_img in similar_images:
+        row = downloaded_df[downloaded_df['IMG_FILE'] == sim_img].iloc[0]
+
+        name = row['name']  # Restaurant name
+        image_url = row['photo_url']  # Image URL
+        # Uncomment to include additional details
+        # google_id = row['google_id']  # Google ID
+        # place_id = row['place_id']  # Place ID
+        # location_link = row['location_link']  # Location link
+        # latitude = row['latitude']  # Latitude
+        # longitude = row['longitude']  # Longitude
+        # photo_date = row['photo_date']  # Photo date
+
+        print(
+            f"Image Path: {sim_img}, "
+            f"Name: {name}, "
+            f"Image URL: {image_url}, "
+            # f"Google ID: {google_id}, "
+            # f"Place ID: {place_id}, "
+            # f"Location Link: {location_link}, "
+            # f"Latitude: {latitude}, "
+            # f"Longitude: {longitude}, "
+            # f"Photo Date: {photo_date}, "
+            f"Cosine Similarity: {sim_score:.4f}"
+        )
