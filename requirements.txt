@@ -8,3 +8,8 @@ numpy
 geopy
 requests
 opencv-python
+nltk
+scikit-learn
+pandas
+sidetable
+kagglehub
