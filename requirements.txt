@@ -20,3 +20,11 @@ tiktoken
 langchain-openai
 langchain-text-splitters
 langchain-community
+
+# API
+fastapi==0.108.0
+pytz
+uvicorn
+# tests
+httpx
+pytest-asyncio
