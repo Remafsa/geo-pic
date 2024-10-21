@@ -23,3 +23,5 @@ TestResults.xml
 .env
 recommendation_system/downloaded_images
 
+notebooks/image_features.csv
+notebooks/output_images.csv
