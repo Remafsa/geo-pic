@@ -13,10 +13,10 @@ import pandas as pd
 import sidetable
 
 # download nltk packages
-nltk.download('stopwords')
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('wordnet')
+# nltk.download('stopwords')
+# nltk.download('punkt')
+# nltk.download('averaged_perceptron_tagger')
+# nltk.download('wordnet')
 
 lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
@@ -114,4 +114,14 @@ def recommend(description):
     # Sort data frame by similarities
     data.sort_values(by='similarity', ascending=False, inplace=True)
 
-    return data[['name', 'style',"city", 'reviews', 'similarity']]
+    return data[['name',"city",'similarity']]
+
+def get_name_recommendation(data):
+    # Access the first value of the 'name' column
+    return data['name'].iloc[0]
+def get_city_recommendation(data):
+    # Access the first value of the 'name' column
+    return data['city'].iloc[0]
+def get_similarity_recommendation(data):
+    # Access the first value of the 'name' column
+    return data['similarity'].iloc[0]
