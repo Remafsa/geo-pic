@@ -18,7 +18,7 @@ model = Model(inputs=base_model.input, outputs=base_model.output)
 image_features = extract_features(local_image_paths)
 
 # Recommend similar images
-input_image_path = "/home/mohammed/code/Remafsa/geo-pic/recommendation_system/افضل-مطعم-فخم-في-الرياض.webp"
+input_image_path = "../recommendation_system/افضل-مطعم-فخم-في-الرياض.webp"
 recommended_images = recommend_similar_images(input_image_path, image_features, image_urls, model)
 print("Recommended Similar Images:")
 for img in recommended_images:

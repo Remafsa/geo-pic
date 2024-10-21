@@ -24,52 +24,69 @@ def json_to_dataframe(file_path):
     return df
 
 # Example usage of json_to_dataframe()
-#file_path = "Outscraper-20241011183106xs96_fine_dining_restaurant.json"
+#file_path = "/home/mohammed/code/Remafsa/geo-pic/recommendation_system/Outscraper-20241011183106xs96_fine_dining_restaurant.json"
 #file_path = ""
 #  path up^^^^^^
 #df = json_to_dataframe(file_path)
 
+import os
+import requests
+import pandas as pd
 
-
-def download_images_from_df(df, url_column='photo_url', lat_column='LAT', lon_column='LON', save_folder='geoclip/Images', save_csv=False, csv_file_name='output.csv'):
+def download_images_from_file(file_path, file_type='csv', url_column='photo_url', name_column='name', lat_column='latitude', lon_column='longitude', save_folder='geoclip/Images', save_csv=False, csv_file_name='output.csv'):
     """
-    Download images from a DataFrame and save them locally in a specified folder.
+    Download images from a file and save them locally in a specified folder.
 
     Parameters:
-    - df: DataFrame containing image URLs, latitudes, and longitudes.
+    - file_path: str, path to the input file (CSV or JSON).
+    - file_type: str, type of the input file ('csv' or 'json').
     - url_column: str, name of the column containing the image URLs (default is 'photo_url').
-    - lat_column: str, name of the column containing the latitudes (default is 'LAT').
-    - lon_column: str, name of the column containing the longitudes (default is 'LON').
-    - save_folder: str, folder where the images will be saved (default is 'Images').
+    - name_column: str, name of the column for naming images when latitude and longitude are null (default is 'name').
+    - lat_column: str, name of the column containing the latitudes (default is 'latitude').
+    - lon_column: str, name of the column containing the longitudes (default is 'longitude').
+    - save_folder: str, folder where the images will be saved (default is 'geoclip/Images').
+    - save_csv: bool, whether to save the updated DataFrame as a CSV file (default is False).
+    - csv_file_name: str, name of the CSV file to save the DataFrame (default is 'output.csv').
 
     Returns:
     - df: The updated DataFrame with the 'IMG_FILE' column.
     """
+    # Load the DataFrame from the specified file
+    if file_type == 'csv':
+        df = pd.read_csv(file_path)
+    elif file_type == 'json':
+        df = pd.read_json(file_path)
+    else:
+        raise ValueError("Unsupported file type. Use 'csv' or 'json'.")
+
     # Create a folder to save images if it doesn't already exist
     os.makedirs(save_folder, exist_ok=True)
     print(f"Images will be saved in: {save_folder}")
 
-    # Dictionary to count occurrences of each latitude/longitude combination
-    counter = {}
+    # Dictionary to count occurrences of names and lat/lon combinations
+    counter = {'lat_lon': {}, 'name': {}}
 
     # Iterate through the DataFrame row by row
     for index, row in df.iterrows():
         # Extract the image URL, latitude, and longitude from the current row
         image_url = row[url_column]
-        latitude = row[lat_column]   # Updated reference
-        longitude = row[lon_column]   # Updated reference
+        latitude = row[lat_column]
+        longitude = row[lon_column]
+        name = row[name_column]
 
-        # Create a unique key for the latitude and longitude
-        location_key = f"{latitude}_{longitude}"
-
-        # Increment the counter for each unique location
-        if location_key in counter:
-            counter[location_key] += 1
+        # Determine the naming convention based on latitude and longitude
+        if pd.notna(latitude) and pd.notna(longitude):
+            # Create a unique key for the latitude and longitude
+            location_key = f"{latitude}_{longitude}"
+            counter_key = 'lat_lon'
+            counter[counter_key][location_key] = counter[counter_key].get(location_key, 0) + 1
+            image_name = os.path.join(save_folder, f"{location_key}_{counter[counter_key][location_key]}.jpg")
         else:
-            counter[location_key] = 1
-
-        # Define the image file name using latitude, longitude, and the counter
-        image_name = os.path.join(save_folder, f"{latitude}_{longitude}_{counter[location_key]}.jpg")
+            # Use the name column for naming
+            name_key = f"{name}"
+            counter_key = 'name'
+            counter[counter_key][name_key] = counter[counter_key].get(name_key, 0) + 1
+            image_name = os.path.join(save_folder, f"{name_key}_{counter[counter_key][name_key]}.jpg")
 
         try:
             # Send a GET request to the image URL with a timeout of 10 seconds

@@ -21,3 +21,5 @@ rad.json
 #Test results file
 TestResults.xml
 .env
+recommendation_system/downloaded_images
+
