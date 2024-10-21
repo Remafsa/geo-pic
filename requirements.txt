@@ -13,3 +13,10 @@ scikit-learn
 pandas
 sidetable
 kagglehub
+requests
+langchain
+python-dotenv
+tiktoken
+langchain-openai
+langchain-text-splitters
+langchain-community
