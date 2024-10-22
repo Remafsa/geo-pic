@@ -18,5 +18,3 @@ elif option == "Descriptive text writing":
 
     if description_text:
         st.write(f"Searching based on the description: {description_text}")
-
-#streamlit
