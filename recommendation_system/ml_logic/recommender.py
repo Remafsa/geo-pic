@@ -27,8 +27,7 @@ def find_cosine_similarity(source_features, test_features):
     if source_norm == 0 or test_norm == 0:
         return 0.0  # Handle case where one of the vectors is zero
     return dot_product / (source_norm * test_norm)
-
-def find_similar_images(target_image_path, image_features, downloaded_df, model, n_similar=10):
+def find_similar_images(target_image_path, image_features, downloaded_df, model, n_similar=3):
     """
     Find similar images based on cosine similarity of their features.
 
@@ -43,22 +42,38 @@ def find_similar_images(target_image_path, image_features, downloaded_df, model,
     - List of tuples containing (similarity score, local image path).
     """
     # Extract features of the target image
-    target_features = extract_features([target_image_path], model, csv_save_path="", make_csv=False)  # Pass as a list for consistency
+    target_features = extract_features([target_image_path], model, csv_save_path="", make_csv=False)
     if target_features.size == 0:
         return []
 
     # Calculate cosine similarity between the target and all dataset images
     similarities = []
     for idx, features in enumerate(image_features):
-        cosine_similarity = find_cosine_similarity(target_features[0], features)  # Use the first feature vector
+        cosine_similarity = find_cosine_similarity(target_features[0], features)
         local_image_path = downloaded_df.iloc[idx]['IMG_FILE']
-        similarities.append((cosine_similarity, local_image_path))  # Include local image path
+        restaurant_name = downloaded_df.iloc[idx]['name']
 
-    # Sort images by similarity in descending order (higher similarity first)
+        # Store cosine similarity, image path, and restaurant name
+        similarities.append((cosine_similarity, local_image_path, restaurant_name))
+
+    # Sort images by similarity in descending order
     similarities.sort(reverse=True, key=lambda x: x[0])
 
-    # Return the top n_similar images
-    return similarities[:n_similar]
+    # Set to track unique restaurant names and their corresponding images
+    unique_restaurants = set()
+    unique_similar_images = []
+
+    for cosine_similarity, local_image_path, restaurant_name in similarities:
+        if restaurant_name not in unique_restaurants:
+            unique_restaurants.add(restaurant_name)  # Add restaurant to the set
+            unique_similar_images.append((cosine_similarity, local_image_path))  # Add to results
+
+        # Stop if we have enough unique images
+        if len(unique_similar_images) >= n_similar:
+            break
+
+    return unique_similar_images
+
 def print_similar_images(similar_images, downloaded_df):
     """
     Print details of the similar images.
