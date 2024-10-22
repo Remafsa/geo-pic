@@ -5,12 +5,15 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem.wordnet import WordNetLemmatizer
-
+from fastapi.responses import JSONResponse
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
+from summary_sentiment.summary_sentiment import *
+from scripts import *
 
 import pandas as pd
 import sidetable
+api_key = os.getenv('API_KEY')
 
 # download nltk packages
 # nltk.download('stopwords')
@@ -53,8 +56,10 @@ def process_sentences(text):
 def recommend(description):
     # Convert user input to lowercase
     description = description.lower()
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    d = os.path.join(current_dir, "..", "data", "combined_data.csv")
+    data = pd.read_csv(d)
 
-    data = pd.read_csv("/Users/remaalnssiry/code/Remafsa/geo-pic/geo-pic/data/combined_data.csv")
     cities_list = ['amsterdam', 'athens', 'barcelona', 'berlin', 'bratislava',
        'brussels', 'budapest', 'copenhagen', 'dublin', 'edinburgh',
        'geneva', 'hamburg', 'helsinki', 'krakow', 'lisbon', 'ljubljana',
@@ -117,11 +122,13 @@ def recommend(description):
     return data[['name',"city",'similarity']]
 
 def get_name_recommendation(data):
-    # Access the first value of the 'name' column
-    return data['name'].iloc[0]
+    # Access the top 3 values of the 'name' column
+    return data['name'].iloc[:3].tolist()
+
 def get_city_recommendation(data):
-    # Access the first value of the 'name' column
-    return data['city'].iloc[0]
+    # Access the top 3 values of the 'city' column
+    return data['city'].iloc[:3].tolist()
+
 def get_similarity_recommendation(data):
-    # Access the first value of the 'name' column
-    return data['similarity'].iloc[0]
+    # Access the top 3 values of the 'similarity' column
+    return data['similarity'].iloc[:3].tolist()

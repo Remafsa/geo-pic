@@ -25,3 +25,11 @@ recommendation_system/downloaded_images
 
 notebooks/image_features.csv
 notebooks/output_images.csv
+# Python cache files
+__pycache__/
+*.pyc
+
+# Ignore specific files
+
+# Ignore directories
+tokenizers/
