@@ -132,3 +132,37 @@ def get_city_recommendation(data):
 def get_similarity_recommendation(data):
     # Access the top 3 values of the 'similarity' column
     return data['similarity'].iloc[:3].tolist()
+if __name__ == "__main__":
+
+    # Get recommendations based on user input
+    recommend_result = recommend("cafe")
+
+    # Get top 3 results
+    names = get_name_recommendation(recommend_result)
+    areas = get_city_recommendation(recommend_result)
+    similarities = get_similarity_recommendation(recommend_result)
+
+    results = []
+    for i in range(3):
+        # Get the Google Places API place ID for each recommendation
+        place_id = get_place_id(api_key, restaurant_name=names[i], area=areas[i])
+        place_details = get_place_details(api_key, place_id=place_id)
+
+        # Append full Google Places API response to results
+        results.append({
+            "name": names[i],
+            "similarity": similarities[i],
+            "area": areas[i],
+            "place_id": place_id,
+            "place_details": place_details  # Include full Google Places API response as is
+        })
+
+    first_place_details = results[0]['place_details']
+    cust_reviews = extract_reviews(first_place_details)
+    review_summary = small_reviews_summary(cust_reviews)
+    print(review_summary)
+    classify = classify_text(review_summary["text"])
+    print(classify)
+    print(type(classify))
+
+    classification_result = classify_text(review_summary["text"])

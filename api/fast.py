@@ -21,6 +21,8 @@ output_images_path = os.path.join(current_dir, "..", "notebooks", "output_images
 
 df_features = pd.read_csv(image_features_path)
 df_output = pd.read_csv(output_images_path)
+print(df_output.columns)
+
 
 if 'IMG_FILE' not in df_features.columns or 'IMG_FILE' not in df_output.columns:
     raise KeyError("'IMG_FILE' column not found in one of the DataFrames.")
@@ -76,11 +78,11 @@ def get_recommendation(user_input: str):
 
 
 @app.post("/find_similar/")
-async def find_similar(file: UploadFile = File(...)):
+async def find_similar(img: UploadFile = File(...)):
     """Find similar images based on the uploaded file."""
-    temp_file_path = f"temp_{file.filename}"
+    temp_file_path = f"temp_{img.filename}"
     with open(temp_file_path, "wb") as f:
-        f.write(await file.read())
+        f.write(await img.read())
 
     model = ResNet50(weights='imagenet', include_top=False, pooling='avg')
     # Find similar images

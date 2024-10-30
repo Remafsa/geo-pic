@@ -1,3 +1,4 @@
+
 import os
 from dotenv import load_dotenv
 import requests
@@ -33,21 +34,21 @@ def get_place_id(api_key, restaurant_name, area=""):
         return None
 
 def get_place_details(api_key,place_id):
-    url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={api_key}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        if data.get("status") == "OK":
-            place_details = response.json().get('result', {})
-            return place_details
-        else:
-            print(f"Error: {data.get('status')} - {data.get('error_message', '')}")
-    else:
-        print(f"Error: Received status code {response.status_code}")
-    return {}
+    """
+    Get details of a place using its PLACE_ID.
 
+    :param place_id: The PLACE_ID of the place.
+    :return: Details of the place as a dictionary.
+    """
+    details_url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={api_key}"
 
-def get_nearby_places(api_key, location, radius=1000):
+    response = requests.get(details_url)
+    place_details = response.json().get('result', {})
+
+    return place_details
+
+def get_nearby_places(self, location, radius=1000):
+
     """
     Get nearby places around a specified location.
 
@@ -61,3 +62,22 @@ def get_nearby_places(api_key, location, radius=1000):
     nearby_places = response.json().get('results', [])
 
     return nearby_places
+
+
+# def extract_reviews(place_details):
+#     """
+#     Extracts all review texts from the place details.
+
+#     :param place_details: A dictionary containing details about the place, including reviews.
+#     :return: A list of review texts.
+#     """
+#     all_reviews = []
+#     reviews = place_details.get('reviews', [])
+
+#     for review in reviews:
+#         review_text = review.get('text', 'No review text available')
+#         all_reviews.append(review_text)
+
+#     reviews_str = "".join(each for  each in all_reviews)
+
+#     return reviews_str
