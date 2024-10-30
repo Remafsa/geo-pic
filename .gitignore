@@ -10,7 +10,6 @@ rad.json
 *.g.xlf
 *.flf
 TestResults.xml
-recommendation_system/downloaded_images
 
 ### Environment ###
 .env
@@ -20,6 +19,7 @@ notebooks/image_features.csv
 notebooks/output_images.csv
 data/city_country_mapping.csv
 data/combined_data.csv
+
 ### Python ###
 __pycache__/
 *.pyc

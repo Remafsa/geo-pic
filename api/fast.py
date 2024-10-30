@@ -23,6 +23,7 @@ df_features = pd.read_csv(image_features_path)
 df_output = pd.read_csv(output_images_path)
 print(df_output.columns)
 
+
 if 'IMG_FILE' not in df_features.columns or 'IMG_FILE' not in df_output.columns:
     raise KeyError("'IMG_FILE' column not found in one of the DataFrames.")
 

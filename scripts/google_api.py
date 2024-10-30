@@ -1,4 +1,16 @@
+
+import os
+from dotenv import load_dotenv
 import requests
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Retrieve the API key from the environment variable
+api_key = os.getenv('API_KEY')
+
+if api_key is None:
+    raise ValueError("API_KEY not found. Please check your .env file.")
 
 
 def get_place_id(api_key, restaurant_name, area=""):
@@ -36,6 +48,7 @@ def get_place_details(api_key,place_id):
     return place_details
 
 def get_nearby_places(self, location, radius=1000):
+
     """
     Get nearby places around a specified location.
 
