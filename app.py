@@ -1,6 +1,10 @@
 import streamlit as st
 import requests
 import tempfile
+from dotenv import load_dotenv
+import os
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
 # Google Places API functions
 def get_place_ids(api_key, restaurant_name, area=""):
     query = f"{restaurant_name} {area}".strip()
@@ -68,8 +72,6 @@ def display_sentiment(sentiment_label, sentiment_score):
     # Add a progress bar to visually show the sentiment score
     sentiment_normalized = (sentiment_score + 1) / 2  # Normalize to 0-1 range if score is between -1 to 1
     # st.progress(f"similarity {sentiment_normalized}")
-# Set your API keys and URLs
-API_KEY = "AIzaSyAF92dqkZhENjD9HlXqzryjtI4u8f5UN40"  # Replace with your actual Google API key
 
 # Sidebar with radio options
 st.sidebar.header("Options")
